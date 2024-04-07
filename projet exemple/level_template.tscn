@@ -1,0 +1,26 @@
+[gd_scene load_steps=4 format=3 uid="uid://y4k64sc7f54a"]
+
+[ext_resource type="Script" path="res://level_template.gd" id="1_3fm02"]
+[ext_resource type="PackedScene" uid="uid://dw6i34wt4qlay" path="res://player.tscn" id="1_unbg8"]
+[ext_resource type="PackedScene" uid="uid://cjedqvui1pjh3" path="res://main_menu.tscn" id="2_msxuv"]
+
+[node name="level_template" type="Node2D"]
+script = ExtResource("1_3fm02")
+
+[node name="player" parent="." instance=ExtResource("1_unbg8")]
+position = Vector2(171, 96)
+level = ExtResource("2_msxuv")
+
+[node name="TileMap" type="TileMap" parent="."]
+format = 2
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+visible = false
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2

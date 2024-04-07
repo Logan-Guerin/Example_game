@@ -1,0 +1,127 @@
+[gd_scene load_steps=12 format=3 uid="uid://d0sbc0g7uxin7"]
+
+[ext_resource type="Script" path="res://zone de vent.gd" id="1"]
+[ext_resource type="Script" path="res://semicircle_world.gd" id="2"]
+[ext_resource type="PackedScene" uid="uid://cjedqvui1pjh3" path="res://main_menu.tscn" id="2_w5qeo"]
+[ext_resource type="PackedScene" uid="uid://dw6i34wt4qlay" path="res://player.tscn" id="3"]
+[ext_resource type="Texture2D" uid="uid://dd7jn2sw1rpjf" path="res://icon.png" id="4_x3sdy"]
+
+[sub_resource type="RectangleShape2D" id="2"]
+size = Vector2(194.843, 376.436)
+
+[sub_resource type="RectangleShape2D" id="3"]
+size = Vector2(10.3333, 10.3333)
+
+[sub_resource type="SpriteFrames" id="4"]
+
+[sub_resource type="RectangleShape2D" id="1"]
+size = Vector2(864, 40)
+
+[sub_resource type="RectangleShape2D" id="5"]
+size = Vector2(864, 32)
+
+[sub_resource type="RectangleShape2D" id="6"]
+size = Vector2(16, 432)
+
+[node name="semicircle_world" type="Node2D"]
+script = ExtResource("2")
+main_menu = ExtResource("2_w5qeo")
+
+[node name="player" parent="." instance=ExtResource("3")]
+position = Vector2(771, 408)
+floor_constant_speed = true
+floor_snap_length = 2.0
+
+[node name="zones forces mvt" type="Node2D" parent="."]
+position = Vector2(988, 368)
+
+[node name="c_gravity_area" type="Area2D" parent="zones forces mvt"]
+position = Vector2(4, -120)
+scale = Vector2(0.944348, 0.97759)
+collision_layer = 3
+gravity_space_override = 3
+gravity_point = true
+gravity_point_unit_distance = 10.0
+gravity_point_center = Vector2(884, 248)
+gravity_direction = Vector2(884, 248)
+gravity = -9.81
+metadata/_edit_group_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="zones forces mvt/c_gravity_area"]
+shape = SubResource("2")
+
+[node name="zone de vent" type="Area2D" parent="zones forces mvt"]
+position = Vector2(-275, -140)
+script = ExtResource("1")
+metadata/_edit_group_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="zones forces mvt/zone de vent"]
+position = Vector2(-1, 0)
+scale = Vector2(44, 44)
+shape = SubResource("3")
+
+[node name="wind" type="AnimatedSprite2D" parent="zones forces mvt/zone de vent"]
+sprite_frames = SubResource("4")
+
+[node name="center_of_gravity" type="Node2D" parent="."]
+position = Vector2(884, 248)
+
+[node name="murs" type="Node2D" parent="."]
+
+[node name="circle" type="StaticBody2D" parent="murs"]
+position = Vector2(648, 72)
+collision_layer = 3
+collision_mask = 0
+metadata/_edit_group_ = true
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="murs/circle"]
+position = Vector2(40, -56)
+polygon = PackedVector2Array(192, 48, 224, 48, 272, 64, 312, 88, 336, 104, 360, 136, 376, 160, 384, 184, 392, 232, 392, 256, 384, 304, 376, 336, 360, 360, 336, 384, 312, 400, 280, 408, 232, 416, 192, 416, 192, 448, 264, 448, 336, 432, 408, 424, 464, 400, 504, 352, 520, 288, 512, 240, 488, 168, 424, 96, 360, 56, 304, 24, 192, 8)
+
+[node name="Polygon2D" type="Polygon2D" parent="murs/circle/CollisionPolygon2D"]
+
+[node name="roof" type="StaticBody2D" parent="murs"]
+position = Vector2(448, 44)
+collision_layer = 3
+collision_mask = 0
+metadata/_edit_group_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="murs/roof"]
+shape = SubResource("1")
+
+[node name="Sprite2D" type="Sprite2D" parent="murs/roof"]
+position = Vector2(-1.52588e-05, -4.76837e-07)
+scale = Vector2(13.5, 0.625)
+texture = ExtResource("4_x3sdy")
+
+[node name="floor" type="StaticBody2D" parent="murs"]
+position = Vector2(448, 448)
+collision_layer = 3
+collision_mask = 0
+metadata/_edit_group_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="murs/floor"]
+shape = SubResource("5")
+
+[node name="Sprite2D" type="Sprite2D" parent="murs/floor"]
+position = Vector2(-1.52588e-05, 7.62939e-06)
+scale = Vector2(13.5, 0.5)
+texture = ExtResource("4_x3sdy")
+
+[node name="flat wall" type="StaticBody2D" parent="murs"]
+position = Vector2(8, 248)
+collision_layer = 3
+collision_mask = 0
+metadata/_edit_group_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="murs/flat wall"]
+shape = SubResource("6")
+
+[node name="Sprite2D" type="Sprite2D" parent="murs/flat wall"]
+scale = Vector2(0.25, 6.75)
+texture = ExtResource("4_x3sdy")
+
+[connection signal="body_entered" from="zones forces mvt/c_gravity_area" to="player" method="_on_gravity_area_body_entered"]
+[connection signal="body_entered" from="zones forces mvt/c_gravity_area" to="player" method="_on_c_gravity_area_body_entered"]
+[connection signal="body_exited" from="zones forces mvt/c_gravity_area" to="player" method="_on_gravity_area_body_exited"]
+[connection signal="body_exited" from="zones forces mvt/c_gravity_area" to="player" method="_on_c_gravity_area_body_exited"]
