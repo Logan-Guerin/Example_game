@@ -1,18 +1,13 @@
-[gd_scene load_steps=12 format=3 uid="uid://d0sbc0g7uxin7"]
+[gd_scene load_steps=10 format=3 uid="uid://d0sbc0g7uxin7"]
 
-[ext_resource type="Script" path="res://zone de vent.gd" id="1"]
 [ext_resource type="Script" path="res://semicircle_world.gd" id="2"]
-[ext_resource type="PackedScene" uid="uid://cjedqvui1pjh3" path="res://main_menu.tscn" id="2_w5qeo"]
 [ext_resource type="PackedScene" uid="uid://dw6i34wt4qlay" path="res://player.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://b3t3iqopiqur1" path="res://zone_de_vent.tscn" id="3_5yfbx"]
 [ext_resource type="Texture2D" uid="uid://dd7jn2sw1rpjf" path="res://icon.png" id="4_x3sdy"]
+[ext_resource type="PackedScene" uid="uid://dpt1tspxyomxg" path="res://moving_plateform.tscn" id="6_qd6qb"]
 
 [sub_resource type="RectangleShape2D" id="2"]
 size = Vector2(194.843, 376.436)
-
-[sub_resource type="RectangleShape2D" id="3"]
-size = Vector2(10.3333, 10.3333)
-
-[sub_resource type="SpriteFrames" id="4"]
 
 [sub_resource type="RectangleShape2D" id="1"]
 size = Vector2(864, 40)
@@ -25,7 +20,6 @@ size = Vector2(16, 432)
 
 [node name="semicircle_world" type="Node2D"]
 script = ExtResource("2")
-main_menu = ExtResource("2_w5qeo")
 
 [node name="player" parent="." instance=ExtResource("3")]
 position = Vector2(771, 408)
@@ -38,30 +32,20 @@ position = Vector2(988, 368)
 [node name="c_gravity_area" type="Area2D" parent="zones forces mvt"]
 position = Vector2(4, -120)
 scale = Vector2(0.944348, 0.97759)
-collision_layer = 3
+collision_layer = 0
 gravity_space_override = 3
 gravity_point = true
 gravity_point_unit_distance = 10.0
 gravity_point_center = Vector2(884, 248)
 gravity_direction = Vector2(884, 248)
-gravity = -9.81
+gravity = -500.0
 metadata/_edit_group_ = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="zones forces mvt/c_gravity_area"]
 shape = SubResource("2")
 
-[node name="zone de vent" type="Area2D" parent="zones forces mvt"]
-position = Vector2(-275, -140)
-script = ExtResource("1")
-metadata/_edit_group_ = true
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="zones forces mvt/zone de vent"]
-position = Vector2(-1, 0)
-scale = Vector2(44, 44)
-shape = SubResource("3")
-
-[node name="wind" type="AnimatedSprite2D" parent="zones forces mvt/zone de vent"]
-sprite_frames = SubResource("4")
+[node name="zone de vent" parent="zones forces mvt" instance=ExtResource("3_5yfbx")]
+position = Vector2(-694, -140)
 
 [node name="center_of_gravity" type="Node2D" parent="."]
 position = Vector2(884, 248)
@@ -121,7 +105,14 @@ shape = SubResource("6")
 scale = Vector2(0.25, 6.75)
 texture = ExtResource("4_x3sdy")
 
-[connection signal="body_entered" from="zones forces mvt/c_gravity_area" to="player" method="_on_gravity_area_body_entered"]
-[connection signal="body_entered" from="zones forces mvt/c_gravity_area" to="player" method="_on_c_gravity_area_body_entered"]
-[connection signal="body_exited" from="zones forces mvt/c_gravity_area" to="player" method="_on_gravity_area_body_exited"]
-[connection signal="body_exited" from="zones forces mvt/c_gravity_area" to="player" method="_on_c_gravity_area_body_exited"]
+[node name="moving plateform" parent="." instance=ExtResource("6_qd6qb")]
+position = Vector2(441, 194)
+t_cycle = 3.142
+
+[node name="moving plateform2" parent="." instance=ExtResource("6_qd6qb")]
+position = Vector2(183, 112)
+t_cycle = 13.0
+
+[node name="moving plateform3" parent="." instance=ExtResource("6_qd6qb")]
+position = Vector2(267, 285)
+t_cycle = 7.0
