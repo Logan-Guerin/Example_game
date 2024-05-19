@@ -33,10 +33,8 @@ func _ready():
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
-	
-	print(Events.main_menu.get_connections())
-	pass
+#func _process(delta):
+#	pass
 
 func to_main_menu():
 	print('main')

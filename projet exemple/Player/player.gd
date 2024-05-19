@@ -33,6 +33,10 @@ var max_velocity = 2000
 
 #var up_direction = Vector2(0,-1)
 var left_dir = up_direction.orthogonal()
+var input_left_dir=1#changer le nom de la variable
+var just_stopped=false
+
+
 var abs_rotation = 0
 
 var centered_gravity=false
@@ -46,7 +50,8 @@ var test_mode = false
 var fun_mode = false
 var bouncing= false
 var bouncyness=0.75
-
+var gravity_point=null
+var gravity_vect = -up_direction
 
 
 
@@ -71,15 +76,22 @@ func _ready():
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
+func _process(delta):# try to change to _physics_process
 	
 	#if area_entered onready var terrain_de_test = $"../terrain de test"
-	if Input.is_action_just_pressed("ui_select"):
-		change_gravity_type(not centered_gravity)
-		print("space")
+#	if Input.is_action_just_pressed("ui_select"): # obsolete... for now
+#		change_gravity_type(not centered_gravity)
+#		print("space")
+	
+	centered_gravity = (gravity_point != null)
 	
 	if Input.is_action_just_pressed("ui_cancel"):
 		Events.main_menu.emit()
+	
+	
+	
+	
+	
 	
 	update_up_direction()
 	
@@ -89,9 +101,30 @@ func _process(delta):
 	
 	p_mvt(delta)
 
+
+
+#func _physics_process(delta):
+#	
+#
+#
+#	pass
+
+
+
+
+
+
+
+
+
+
+
+
 func p_mvt(delta):
 	
 	var vec_gravity = up_direction*gravity
+	
+	
 	
 	if test_mode:
 		if impactsv1:
@@ -106,15 +139,18 @@ func p_mvt(delta):
 	var input_vector = Vector2.ZERO
 	var bounced_vec=Vector2.ZERO
 	var floor_normal = 0
-	input_vector = left_dir* p_walkaccel * (Input.get_axis("ui_right","ui_left"))
-	accel.append(vec_gravity*delta)
 	
+	input_vector = left_dir* p_walkaccel * (Input.get_axis("ui_right","ui_left"))
+	
+	change_left_perception(input_vector)
+	
+	accel.append(vec_gravity*delta)#make it to accel+=vec_gravity*delta
 	
 	update_animation(input_vector)
 	#print(input_vector)
 	
 	
-	accel.append(input_vector*delta)
+	accel.append(input_vector*input_left_dir*delta)
 	accel.append(jump_(delta))
 	velocity=apply_accel(delta,accel,velocity)
 	accel = []
@@ -187,40 +223,70 @@ func add_force(force):
 	
 	accel.append(force/mass)
 
-func change_gravity_type(is_centered):
-	centered_gravity = is_centered
-	#print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaah")
-	change_up_direction(up_direction)
+#func change_gravity_type(is_centered):
+#	centered_gravity = is_centered
+#	#print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaah")
+#	change_up_direction(up_direction)
 
 
 func update_animation(input_vector):
+	
 	if input_vector!=Vector2.ZERO:
+		just_stopped =true
 		player_sprite.play("run")
 		player_sprite.flip_h = (input_vector.dot(-left_dir)<0)
 	else:
+		if just_stopped:
+			just_stopped=false
+			input_left_dir=sign(left_dir.dot(Vector2(-1,0)))
+			if input_left_dir==0:
+				input_left_dir=sign(left_dir.dot(Vector2(0,1)))
+			
+			
 		player_sprite.play("idle")
 	
 	if not is_on_floor():
 		player_sprite.play("jump")
 
 
+func change_left_perception(input_vector):
+	if input_vector!=Vector2.ZERO:
+			just_stopped =true
+	else:
+		if just_stopped:
+			just_stopped=false
+			input_left_dir=sign(left_dir.dot(Vector2(-1,0)))
+			if input_left_dir==0:
+				input_left_dir=sign(left_dir.dot(Vector2(0,1)))
+
+
+
+
 func update_up_direction():
 	
-	#print(centered_gravity)
-	
 	if centered_gravity:
-		var center=Vector2(world.gravity_center_position.x-position.x,world.gravity_center_position.y-position.y)
-		#actually,center is currently the center of gravity of the room relative to the player's position.
+		change_up_direction(gravity_point-position)
+	elif gravity_vect!=Vector2.ZERO:
+		change_up_direction(gravity_vect)
+	#else : don't change the up_direction
 		
-		if not center == Vector2.ZERO:
-			change_up_direction(center)
-			
-			
-	else:
-		if Input.is_action_just_pressed("ui_accept") and not Input.is_action_just_pressed("ui_select"):
-			print('something')
-			change_up_direction(up_direction.rotated(PI/8))
-		pass
+	#print(centered_gravity)
+#
+#	if centered_gravity:
+#		#center=Vector2(world.gravity_center_position.x,world.gravity_center_position.y)
+#		#actually,center is currently the center of gravity of the room relative to the player's position.
+#
+#		if not gravity_point-position == Vector2.ZERO:
+#			change_up_direction(gravity_point-position)
+#		else:
+#			change_up_directioin(gravity_vect)
+#
+#
+#	else:
+#		if Input.is_action_just_pressed("ui_accept") and not Input.is_action_just_pressed("ui_select"):
+#			print('something')
+#			change_up_direction(up_direction.rotated(PI/8))
+#		pass
 
 
 func change_up_direction(n_direction):
@@ -265,16 +331,19 @@ func apply_accel(delta,a_vectors,v_vector,max_Speed=800):
 	
 	a_vector -= gravity*floating*up_direction #applying wether the player is bound to gravity or not ==> should be made into a vector in the list of vectors
 	
+	#try changing v_vector to velocity
+	#try changing v_vector to velocity
+	#try changing v_vector to velocity
+	#try changing v_vector to velocity
 	
 	
-	if round(a_vector.dot(left_dir))==0:
-		#print("normal")
-		if v_vector.dot(left_dir)==0:
-			#print("argh")
-			pass
-		else:
-			v_vector = v_vector.move_toward(up_direction*up_direction.dot(v_vector),12.5*frixion*delta*speed_scale)
-			#print("bloups")
+	if v_vector.dot(left_dir)*a_vector.dot(left_dir)<=0:#HELL YEAH IT WORKS
+		v_vector = v_vector.move_toward(up_direction*up_direction.dot(v_vector),12.5*frixion*delta*speed_scale)
+#		print('ounga bounga')
+#	else:
+#		print('__________________________________________________________')
+	
+		
 	#print(a_vector.dot(left_dir))
 	a_vector.x*=speed_scale
 	a_vector.y*=speed_scale
@@ -322,25 +391,6 @@ func apply_accel_SHMUP(delta,a_vectors,v_vector,max_Speed=200):
 
 
 
-
-
-
-
-
-func _on_c_gravity_area_body_exited(body):
-	change_gravity_type(false)
-	print("aahh")
-	print(up_direction.angle())
-
-
-
-
-func _on_c_gravity_area_body_entered(body):
-	"""note : this is launched once upon starting the game"""
-	print(Time)
-	change_gravity_type(true)
-	print("ha")
-	pass # Replace with function body.
 
 
 

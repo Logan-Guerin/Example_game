@@ -21,15 +21,9 @@ Events="*res://Events.gd"
 
 [display]
 
-window/size/viewport_width=1920
-window/size/viewport_height=1080
-window/size/mode=2
-window/size/initial_position_type=0
-window/size/initial_position=Vector2i(5779, 2865)
-window/size/window_width_override=1200
-window/size/window_height_override=800
-window/stretch/aspect="ignore"
-window/stretch/scale=0.5
+window/size/viewport_width=960
+window/size/viewport_height=540
+window/vsync/vsync_mode=0
 
 [input]
 

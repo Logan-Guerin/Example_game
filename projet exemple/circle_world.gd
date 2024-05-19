@@ -20,11 +20,14 @@ var gravity_center_position = Vector2(0,0)
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	
-	
+	Events.main_menu.connect(to_main_menu)
 	s_circle.polygon = c_circle.polygon
 	polygon_2d.polygon = collision_polygon_2d.polygon
 
 
+func to_main_menu():
+	print('main')
+	get_tree().change_scene_to_file("res://main_menu.tscn")
 
 
 
@@ -32,11 +35,3 @@ func _ready():
 
 
 
-
-
-
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta):
-#	pass
